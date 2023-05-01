@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>PLAYLIST</title>
+	<link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="assets/css/styles.css?v=1.4">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<script src="https://sdk.amazonaws.com/js/aws-sdk-2.1284.0.min.js"></script>
+	<script src='jquery.js'></script>
+	<script src="https://sdk.amazonaws.com/js/aws-sdk-2.1284.0.min.js"></script>
+	<script src='getCharts.js'></script>
+	<script src='getBalances.js'></script>
+	<script src='submitEntry.js'></script>
+	<script src='updateBalances.js'></script>
+	<script src='makeArrays.js'></script>
+	<link rel="shortcut icon" href="Images/favicon.png"/>
+	<script src='getPointsScored.js'></script>
+	<script src='getStatus.js'></script>
+</head>
+
+<style>
+
+		nav ul {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            display: flex;
+        }
+
+        nav li {
+            margin-left: 100px;
+        }
+
+        nav li:last-child {
+            margin-right: 0;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        nav a:hover {
+            background-color: #fff;
+            color: #333;
+            cursor: pointer;
+        }
+		header {
+            background-image: linear-gradient(to right, #7654E0 0%, #F02164 50%, #FF834D 100%);
+            color: #fff;
+            height: 60px;
+            display: flex;
+            align-items: center;
+        }
+		.howToPlay {
+			font-size: 15px;
+            color: rgb(140,82,255);
+			font-family: 'Inter', sans-serif;
+			text-align: left;
+			float: left;
+			font-weight: 600;
+			display: flex;
+		}
+		.howToPlay:hover {
+            text-decoration: underline;
+            cursor: pointer;
+        }
+		.thick {
+			font-weight: 600;
+			font-family: 'Inter', sans-serif;
+			color: rgb(140,82,255);
+			text-align: left;
+			float: left;
+			font-size: 15px;
+			display: flex;
+		}
+		.teamname::placeholder {
+			opacity: .5;
+			color: white;
+			text-align: center;
+		}
+		.teamname:focus::placeholder {
+			color: transparent;
+		}
+		.loading {
+            width: 7.5%;
+            position: absolute;
+            -webkit-transform: translate(0, -50%);
+            transform: translate(0, -50%);
+		}
+		.invisible {
+            display: none;
+            visibility: hidden;
+        }
+		.nopicksimg {
+            position: absolute;
+			-webkit-transform: translate(-50%, -75%);
+            transform: translate(-50%, -75%);
+            width: 20%;
+        }
+
+
+</style>
+
+<body>
+
+	<header>
+		<nav>
+		  <ul>
+			<li><img style="height: 40px; position: absolute; margin-top: -10px;" src='Images/Playlist-Logo-White.png'></li>
+			<li><a href="https://playlistgames.carrd.co">HOME</a></li>
+			<li><a href="entries.html">MY ENTRIES</a></li>
+			<li><a href="leaderboard.html">LEADERBOARD</a></li>
+			<li><a href="fantasy.html">STAR BATTLES</a></li>
+			<li><a href="overunder.html">POP PARLAY</a></li>
+		  </ul>
+		</nav>
+	  </header>
+
+<main>
+	<div class="main-wrapper position-relative ">
+		<div class="container-fluid">
+			<div class="mobile-logo pt-4">
+				<div class="d-flex align-items-center justify-content-center">
+				<span class="opennav" style="font-size:30px;cursor:pointer; color:white;  position: absolute; left: 1rem;" onclick="openNav()">&#9776;</span>
+				<div class="text-center text-white mobile-logo mb-0 h1 align-items-center d-flex justify-content-center position-relative">
+					<img src="assets/images/logo.png">PLAYLIST
+				</div>
+			</div>
+			</div>
+			
+			
+			<div id="mySidenav" class="sidenav py-5">
+				
+				<div class="mobile-sidebar border mx-2">
+					<div class="mobile-header ">
+				<div class="text-center py-4">
+					<!-- <span class="px-4 text-white h2 mobile-top-heading fw-bold">My Team</span> -->
+					<input class=" text-white h2 mobile-top-heading fw-bold bg-transparent w-50 text-center" type="text" name="" placeholder="My Team">
+					<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+				</div>
+				<div class="text-center text-white mobile-title pb-2"><span id="remainingPoints1" class="number"> 10/10 </span> Credits Remaining</div>
+			</div>
+			<table class="table text-white">
+				<thead class="bg-black theading">
+					<tr class="border-0">
+						<th class="text-center" scope="col">
+							<i class="fa fa-user-circle-o"></i>
+						</th>
+						<th class="text-center" scope="col">Artist</th>
+						<th class="text-center" scope="col">
+							<div class="fw-normal">Playlist Score </div>
+							<div class="fw-normal">Today</div>
+						</th>
+					</tr>
+				</thead>
+			</table>
+			<div class="mobile-table">
+				<table class="table text-white formobile">
+					<tbody class="table-body-one">
+					</tbody>
+				</table>
+			</div>
+			<div class="mobile-footer text-center pt-2 pb-3">
+				<button class="btn btn-block btn-custom text-white px-5 py-2">Submit Lineup</button>
+			</div>
+		</div>
+	</div>
+</div>
+		<div class="row mx-0">
+			<div class="col-lg-9 pt-3">
+				<div class="row align-items-center mx-0 mobile-display">
+					<div class="col-lg-6 pt-3">
+						<div class="main-heading text-white fw-bold h2">POP ARTIST WEEKLY SHOWDOWN</div>
+						<div class="text-white main-text">
+							Create a team of <span class="number">5</span>  artists and compete with others around the world to see which team performs the best over the period of this game.
+						</div>
+					</div>
+					<div class="col-lg-4 offset-lg-1 pt-3">
+						<div class="text-center text-white border p-2"><span class="fw-bold">Live: March <span class="number"> 13 - 21</span></span> <br> <span class="number"> $50 </span> Entry Fee | <span class="number"> $50,000 </span>  Prize Pool</div>
+					</div>
+				</div>
+
+				<div class="mt-4 mx-2 main-cards-content">
+					<div class="d-flex align-items-center flex-wrap justify-content-between pb-4 mobile-view">
+						<div class="text-golden fw-bold h5">
+							<a class="text-golden text-decoration-none" href="#">HOW TO PLAY</a> | 
+							<a class="text-golden text-decoration-none" href="#">SCORING</a>
+						</div>
+						<div>
+							<div class="border rounded d-flex align-items-center px-2 search-box">
+								<i class="fa fa-search text-secondary" aria-hidden="true"></i>
+								<input id='search' class="form-control border-0 rounded-0 bg-transparent text-secondary" placeholder="Search" type="text" name="">
+							</div>
+						</div>
+					</div>
+
+					<div class="checkbox-wrapper d-flex align-items-center flex-wrap justify-content-center pt-3" id="artistcardsparent">
+						<img id='loading' class='loading' src='Images/loading.gif'>
+					</div>
+				</div>
+								
+			</div>
+			<div class="col-lg-3 pt-4">
+				<div class="mobile border">
+					<div class="table-wrapper">
+						<div class="mobile-header ">
+							<div class="text-center py-4">
+								<input class="px-4 text-white h2 mobile-top-heading fw-bold bg-transparent teamname" style='width: 80%;' type="text" name="" placeholder="My Team">
+							</div>
+							<div class="text-center text-white mobile-title pb-2"><span id="remainingPoints2" class="number"> 10/10 </span> Credits Remaining</div>
+						</div>
+							<table class="table text-white">
+								<thead class="bg-black theading">
+									<tr class="border-0">
+										<th class="text-center" scope="col">
+											<i class="fa fa-user-circle-o"></i>
+										</th>
+										<th class="text-center" scope="col">Artist</th>
+										<th class="text-center" scope="col">
+											<div class="fw-normal">Playlist Score </div>
+											<div class="fw-normal">Today</div>
+										</th>
+									</tr>
+								</thead>					
+							</table>
+						<div class="mobile-table">
+							<table class="table text-white fordesktop">
+								<tbody class="table-body">
+								</tbody>
+							</table>
+						</div>
+						<div class="mobile-footer text-center pt-2 pb-3">
+							<button class="btn btn-block btn-custom text-white px-5 py-2">Submit Lineup</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+	</div>
+</main>
+<footer>
+	<div class="footer d-flex align-items-center justify-content-between p-2">
+		<button  class="btn btn-custom text-white py-2" onclick="openNav()">View & Submit Lineup</button>
+		<div class="text-center footer-text">
+			<span class="text-white d-block span">10/10</span>
+			<span class="d-block text-white fw-bold">Credits Remaining</span>
+		</div>
+	</div>
+</footer>
+<script src="assets/js/jquery-3.6.3.js"></script>
+<script src="assets/js/popper.min.js"></script>
+<script src="assets/js/bootstrap.min.js"></script>
+<script src="assets/js/my.js?v=1"></script>
+<script src='search.js'></script>
+<script>
+function openNav() {
+  document.getElementById("mySidenav").style.width = "100%";
+}
+
+function closeNav() {
+  document.getElementById("mySidenav").style.width = "0";
+}
+</script>
+
+
+<script>
+
+			pointsSpent = 0;
+			entryObject = {};
+			entryObject["teamName"] = "My Team";
+			entryObject["entryPoolId"] = "";
+			entryObject["artists"] = [];
+
+			document.getElementById('remainingPoints1').innerHTML = `${10-pointsSpent}/10`;
+			document.getElementById('remainingPoints2').innerHTML = `${10-pointsSpent}/10`;
+
+			getToken();
+
+
+            ///////////// LENGTHY LOGIN PROCESS WITH MASTER KEYS (HIDDEN IN SESSIONSTORAGE FOR SECURITY) ////////////
+
+            AWS.config.region = 'us-west-2';
+            AWS.config.credentials = new AWS.CognitoIdentityCredentials({IdentityPoolId: 'us-west-2:de570cb5-acb3-4efd-9863-a52052033cbc'})
+
+            var credKeys = [
+                                    'accessKeyId',
+                                    'secretAccessKey',
+                            ];
+
+
+            //credKeys.forEach(function(key) {
+            //    AWS.config.credentials[key] = sessionStorage.getItem(key);
+            //});
+
+            AWS.config.credentials = new AWS.CognitoIdentityCredentials({IdentityPoolId: 'us-west-2:de570cb5-acb3-4efd-9863-a52052033cbc'})
+            AWS.config.update({
+                    maxRetries: 3,
+                    httpOptions: {timeout: 30000, connectTimeout: 5000},
+                    region: 'us-west-2',
+                    accessKeyId: sessionStorage.getItem('accessKeyId'),
+                    secretAccessKey: sessionStorage.getItem('secretAccessKey'),
+            });
+
+
+
+            const cognitoIdentityServiceProvider = new AWS.CognitoIdentityServiceProvider();
+
+            cognitoIdentityServiceProvider.getUser({AccessToken: sessionStorage.getItem('accessToken')}, function(err, data) {
+                if (err) {
+                    console.log(err);
+                    window.location.href = "login.html";
+                } else {
+                    console.log(data);
+                    userEmail = data.UserAttributes[3]["Value"];
+
+                    username = data.UserAttributes[2]["Value"];
+                    //document.getElementById('username').innerHTML = username;
+
+                    console.log(userEmail, username);
+
+                    getBalances(userEmail);
+                    asyncActivate();
+
+                    }
+                });
+
+            
+            //////// END OF PROCESS ////////
+
+
+
+
+
+	            async function asyncActivate() {
+                for (let i = 0; i < 150; i++) {
+                    makeArrays(i);
+                }
+
+            }
+
+            cardsMade = false;
+            
+
+            window.setInterval( function(){
+                if (songArray.length == 150) {
+                    if (cardsMade == false) {
+                        cardsMade = true;
+						for (i=0; i<20; i++) {
+							let key = getObjectKey(songArray, i);
+							generateInitialCards(songArray[key]);
+						}
+						document.getElementById('loading').classList.add('invisible')
+                    }
+                }
+            },10)
+
+	searchInProgress = false;
+	document.getElementById('search').addEventListener('keyup', function (event) {
+
+			document.getElementById("artistcardsparent").innerHTML = "<img id='loading' class='loading' src='Images/loading.gif'>"
+			let query = document.getElementById('search').value;
+			searchWithDelay(query);
+
+	});
+
+	let timeoutId;
+
+
+	/* 	THE FUNCTION BELOW'S VERY IMPORTANT ////
+	//// TO AVOID CHARTMETRIC RATE OVERFLOW  */
+	//              VVVVVVV                  //
+	function searchWithDelay(searchTerm) {
+		// Clear the previous timeout if there was one
+		clearTimeout(timeoutId);
+
+		// Set a new timeout for 1000 milliseconds (1 second)
+		timeoutId = setTimeout(function() {
+			// Trigger the search function after the delay
+			search(searchTerm);
+		}, 500);
+	}
+
+	function getObjectKey(obj, value) {
+        return Object.keys(obj).find((key) => obj[key].currentRank === String(value));
+    }
+
+	function getKeyById(obj, value) {
+        return Object.keys(obj).find((key) => obj[key].artistId === String(value));
+    }
+
+	function getKeyByIdSearch(obj, value) {
+        return Object.keys(obj).find((key) => obj[key].id === Number(value));
+    }
+
+	
+
+
+
+	function howToPlay() {
+		document.getElementById('instructions2').classList.remove('invisible')
+		document.getElementById('greyOut').classList.remove('invisible')
+		document.getElementById('instructionsX').classList.remove('invisible')
+	}
+
+	function scoring() {
+		document.getElementById('instructions1').classList.remove('invisible')
+		document.getElementById('greyOut').classList.remove('invisible')
+		document.getElementById('instructionsX').classList.remove('invisible')
+	}
+
+	function xOut() {
+		document.getElementById('instructions1').classList.add('invisible')
+		document.getElementById('instructions2').classList.add('invisible')
+		document.getElementById('instructionsX').classList.add('invisible')
+		document.getElementById('greyOut').classList.add('invisible')
+	}
+
+
+
+</script>
+
+
+</body>
+</html>

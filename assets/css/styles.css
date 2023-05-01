@@ -1,0 +1,336 @@
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@300;400;500;600;700&display=swap');
+/*font-family: 'Anton', sans-serif;
+font-family: 'Montserrat', sans-serif;*/
+
+
+body{
+	background-color: rgba(0, 0, 0, 1.0);
+	font-family: 'Montserrat', sans-serif;
+}
+::-webkit-scrollbar {
+  width: 12px;       
+}
+
+::-webkit-scrollbar-track {
+  background: transparent ;     
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #8d8d8d;   
+  border-radius: 20px;       
+  border: 3px solid #8d8d8d; 
+  height:50px; 
+  transition: background-color 0.3s;
+  transition: border 0.3s;
+}
+::-webkit-scrollbar-thumb:hover {
+	cursor: pointer;
+	background-color: #a3a3a3; 
+	border: 3px solid #a3a3a3; 
+}
+::-webkit-scrollbar-corner {
+	background-color: transparent;
+}
+.logo , .mobile-logo{
+	font-family: 'Anton', sans-serif;
+}
+.logo img , .mobile-logo img{
+	max-width: 65px;
+}
+/*.main-wrapper{
+	height: calc(100vh - 20px) !important;
+	overflow-y: scroll;
+}*/
+.main-text{
+	font-weight: 500;
+	font-size: 14px;
+}
+.border{
+border: 2px solid #797979 !important;
+}
+.main-heading{
+	font-size: 2.7em !important;
+	font-family: 'Anton', sans-serif;
+} 
+.mobile-top-heading{
+	font-family: 'Anton', sans-serif;
+}
+.text-golden{
+	color: rgb(140,82,255) !important;
+}
+.search-box input{
+	box-shadow: unset !important;
+}
+.mobile , .mobile-sidebar{
+	border-radius: 25px;
+	background-color: rgba(39, 39, 38, 1.0);
+}
+.btn-custom{
+	background-color: rgba(77, 38, 201, 1.0);
+	font-weight: 600;
+	font-size: 18px;
+	border-radius: 16px;
+}
+.avatar{
+	width: 60px;
+	height:60px;
+}
+.avatar img{
+	object-fit: contain;
+}
+.bg-black{
+	background-color: rgba(0, 0, 0, 1.0);
+}
+.mobile-top-heading{
+	border:2px solid rgba(232, 215, 255, 1);
+	box-shadow: 0 0 0.2rem rgba(112, 0, 239, 0.8) , 
+	0 0 0.3rem rgba(112, 0, 239, 0.8) , 
+	0 0 0rem rgba(112, 0, 239, 0.8), 
+	0 0 1rem rgba(112, 0, 239, 0.8), 
+	0 0 1.2rem rgba(112, 0, 239, 0.8), 
+	inset 0 0 0.3rem rgba(112, 0, 239, 0.8); 
+}
+.mobile-table{
+	height: 58vh;
+	overflow-y: scroll;
+}
+.mobile-title{
+	font-weight: 500;
+	font-size: 15px;
+}
+
+table tr th{
+	font-size: 13px;
+	line-height: 1.2;
+	vertical-align: middle;
+
+}
+table tr th i{
+	font-size: 16px !important;
+
+}
+table tbody tr td{
+	vertical-align: middle;
+	font-size: 16px;
+	line-height: 1.2;
+}
+.checkbox-wrapper {
+	grid-gap: 25px;
+	height: 65vh;
+	overflow-y: scroll;
+}
+.card-checkBox-label:hover{
+	transition: transform .4s;
+    transform: scale(1.05);
+}
+.card-checkBox-label .checkbox-image{
+	width: 220px;
+  height: 300px;
+  object-fit: cover;
+}
+
+.card-checkBox-label{
+	cursor: pointer;
+}
+
+.checkbox-input{
+	display: none;
+}
+.checked-styling{
+border:2px solid rgba(0, 0, 0, 1);
+border-radius: 25px;
+}
+.checkbox-input:checked + .checked-styling{
+	transition: box-shadow 0.11s;
+	border:2px solid rgba(232, 215, 255, 1);
+	border-radius: 25px;
+	box-shadow: 0 0 0.2rem rgba(112, 0, 239, 0.8) , 
+	0 0 0.3rem rgba(112, 0, 239, 0.8) , 
+	0 0 0rem rgba(112, 0, 239, 0.8), 
+	0 0 1rem rgba(112, 0, 239, 0.8), 
+	0 0 1.2rem rgba(112, 0, 239, 0.8), 
+	inset 0 0 0.3rem rgba(112, 0, 239, 0.8); 
+	z-index: 1 !important;
+}
+
+
+.checkbox-image{
+	border-radius: 25px;
+}
+.overlay{
+	position:absolute;
+	top:0px;
+	left:0px;
+	bottom:0px;
+	right:0px;
+	border-radius: 25px;
+	background-image:linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.5)) ;
+}
+.card-bottom{
+	background-color: rgba(44, 18, 122, 1.0);
+	bottom: 0 !important;
+	border-radius: 0 0 24px 24px;
+	z-index: 1 !important;
+}
+.card-top{
+	top: 0 !important;
+	z-index: 99 !important;
+}
+.graph-image img{
+	max-width: 25px;
+}
+.card-center{
+	bottom:3.4rem;
+	z-index: 99 !important;
+}
+.card-bottom-text , .mobile-points{
+	line-height: 1.1;
+	font-size: 14px;
+	font-weight: 300;
+}
+.card-bottom-number{
+	border-right: 1px dashed #fff;
+	font-family: 'Anton', sans-serif;
+	letter-spacing: 2px;
+	font-size: 22px;
+}
+.card-center-text , .mobile-table-text {
+	font-weight: 600;
+	line-height: 1.3;
+}
+.card-center-title{
+	font-weight: 300;
+	font-size: 14px;
+	line-height: 1
+}
+.top-number , .mobile-table-number{
+	font-family: 'Anton', sans-serif;
+	letter-spacing: 2px;
+	font-size: 24px;
+}
+.image-number{
+	left:0;
+	right:0;
+	bottom:0;
+	margin-left: auto;
+	margin-right: auto;
+	font-family: 'Anton', sans-serif;
+	font-size: 18px;
+}
+.mobile{
+		display: block;
+}
+.mobile-logo{
+		display: none;
+	}
+	footer{
+		display: none;
+	}
+@media only screen and (max-width:992px){
+	
+	.logo{
+		display: none !important;
+	}
+	.mobile{
+		display: none;
+	}
+	.mobile-sidebar{
+		display: block;
+	}
+	
+	.card-checkBox-label .checkbox-image{
+		width: 130px;
+    height: 185px;
+    object-fit: cover;
+	}
+	.checkbox-wrapper {
+		grid-gap: 14px;
+	}
+
+	.mobile-logo{
+		display: block;
+	}
+	.mobile-display{
+		display: none;
+	}
+	.mobile-view{
+		display: block !important;
+		justify-content: center !important;
+		text-align: center !important;
+	}
+	footer{
+		display: block;
+	}
+	.footer{
+		background-color: rgba(77, 38, 201, 1.0);
+		position: fixed;
+		bottom: 0;
+		width: 100%;
+		z-index: 999;
+	}
+	.footer button{
+	border:2px solid #fff;
+	font-weight: 600;
+	border-radius: 16px;
+
+	}
+	.footer-text{
+		font-size: 12px;
+	}
+	.footer-text .span{
+		font-family: 'Anton', sans-serif;
+	}
+	.checkbox-wrapper{
+		height: 50vh !important;
+	}
+	.mobile-table{
+	height: 50vh;
+	overflow-y: scroll;
+}
+
+}
+
+.sidenav {
+  height: 100%;
+  width: 0;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #111;
+  overflow-x: hidden;
+  transition: 0.5s;
+  padding-top: 60px;
+  text-align:center;
+  z-index: 99999 !important;
+}
+
+.sidenav a {
+  padding: 8px 8px 8px 32px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #818181;
+  display: block;
+  transition: 0.3s;
+
+}
+
+.sidenav a:hover{
+  color: #f1f1f1;
+}
+
+.sidenav .closebtn {
+  position: absolute;
+  top: 4rem;
+  right: 25px;
+  font-size: 36px;
+  margin-left: 50px;
+}
+.number{
+	font-family: 'Anton', sans-serif;
+	font-size: 20px;
+}
+/*@media screen and (max-height: 450px) {
+  .sidenav {padding-top: 15px;}
+  .sidenav a {font-size: 18px;}
+}*/
