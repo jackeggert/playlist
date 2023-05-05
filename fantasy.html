@@ -286,7 +286,7 @@ function closeNav() {
 
 			getToken();
 
-			/*
+
             ///////////// LENGTHY LOGIN PROCESS WITH MASTER KEYS (HIDDEN IN SESSIONSTORAGE FOR SECURITY) ////////////
 
             AWS.config.region = 'us-west-2';
@@ -302,6 +302,7 @@ function closeNav() {
             //    AWS.config.credentials[key] = sessionStorage.getItem(key);
             //});
 
+			
             AWS.config.credentials = new AWS.CognitoIdentityCredentials({IdentityPoolId: 'us-west-2:de570cb5-acb3-4efd-9863-a52052033cbc'})
             AWS.config.update({
                     maxRetries: 3,
@@ -336,28 +337,30 @@ function closeNav() {
 
             
             //////// END OF PROCESS ////////
-			*/
+
 
 
 
 
 	            async function asyncActivate() {
-                for (let i = 0; i < 150; i++) {
-                    makeArrays(i);
-                }
 
-            }
+                    generatePopularList();
+
+
+            	}
 
             cardsMade = false;
             
 
             window.setInterval( function(){
-                if (songArray.length == 150) {
+                if (songArray.length == 38) {
                     if (cardsMade == false) {
                         cardsMade = true;
-						for (i=0; i<20; i++) {
-							let key = getObjectKey(songArray, i);
-							generateInitialCards(songArray[key]);
+						songArray.sort(function(a, b) {
+							return b.projectedRank - a.projectedRank;
+						});
+						for (i=0; i<38; i++) {
+							generateInitialCards(songArray[i]);
 						}
 						document.getElementById('loading').classList.add('invisible')
                     }
@@ -366,11 +369,20 @@ function closeNav() {
 
 	searchInProgress = false;
 	document.getElementById('search').addEventListener('keyup', function (event) {
+		var key = event.keyCode || event.charCode;
 
 			document.getElementById("artistcardsparent").innerHTML = "<img id='loading' class='loading' src='Images/loading.gif'>"
-			let query = document.getElementById('search').value;
-			searchWithDelay(query);
-
+			if ( key == 8 || key == 46 ) {
+				if (document.getElementById('search').value == '') {
+					document.getElementById("artistcardsparent").innerHTML = '';
+					for (i=0; i<38; i++) {
+						generateInitialCards(songArray[i]);
+					}
+				}
+			} else {
+				let query = document.getElementById('search').value;
+				searchWithDelay(query);
+			}
 	});
 
 	let timeoutId;

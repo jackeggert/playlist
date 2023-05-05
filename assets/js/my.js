@@ -1,63 +1,59 @@
-function generatePopularList (i) {
-
-
-	let rank = i;
+function generatePopularList () {
 
 	AWS.config.update({region: 'us-west-2'});
 
 	var ddb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
 
-	var params = {
-		TableName: 'popularCharts',
-		Key: {
-			'rank': {N: rank}
-		},
-		ProjectionExpression: 'artistName, artistImage, artistGenre, playlistPoints, currentRank, id'
-		};
-	
-		// Call DynamoDB to read the item from the table
-		ddb.getItem(params, function (err, data) {
-			if (err) {
-				console.log("Error", err);
-			} else {
-	
-				artistImageString = JSON.stringify(data.Item.artistImage);
-				artistImageLength = artistImageString.length;
-				artistImage = artistImageString.slice(6, artistImageLength - 2);
-	
-	
-				currentRankString = JSON.stringify(data.Item.currentRank);
-				currentRankLength = currentRankString.length;
-				currentRank = currentRankString.slice(6, currentRankLength - 2);
-	
-	
-				artistNameString = JSON.stringify(data.Item.artistName);
-				artistNameLength = artistNameString.length;
-				artistName = artistNameString.slice(6, artistNameLength - 2);
-	
-	
-				artistGenreString = JSON.stringify(data.Item.artistGenre);
-				artistGenreLength = artistGenreString.length;
-				artistGenre = artistGenreString.slice(6, artistGenreLength - 2);
-	
-	
-				projectedRankString = JSON.stringify(data.Item.playlistPoints);
-				projectedRankLength = projectedRankString.length;
-				projectedRank = projectedRankString.slice(6, projectedRankLength - 2);
-	
-				idString = JSON.stringify(data.Item.id);
-				idLength = idString.length;
-				id = idString.slice(6, idLength - 2)
-	
-	
-				const songObject = { currentRank: currentRank, title: artistName, artist: artistGenre, image: artistImage, projectedRank: projectedRank, artistId: id };
-				songArray.push(songObject);
+	const params = {
+		TableName: "artistsDropping",
+		ProjectionExpression: 'artist, points, id, image'
+	};
+
+	ddb.scan(params, function(err, data) {
+		if (err) console.log(err);
+		else {
+			droppingLength = data.Items.length;
+			for (let i = 0; i < data.Items.length; i++) {
+
+				if (data['Items'][i]['id']) {
+					nameInitial = data['Items'][i]['artist']
+					nameString = JSON.stringify(nameInitial);
+					nameLength = nameString.length;
+					artistNameFinal = nameString.slice(6, nameLength - 2);
+
+					imageInitial = data['Items'][i]['image']
+					imageString = JSON.stringify(imageInitial);
+					imageLength = imageString.length;
+					imageFinal = imageString.slice(6, imageLength - 2);
+
+					idInitial = data['Items'][i]['id']
+					idString = JSON.stringify(idInitial);
+					idLength = idString.length;
+					idFinal = idString.slice(6, idLength - 2);
+
+					pointsInitial = data['Items'][i]['points']
+					pointsString = JSON.stringify(pointsInitial);
+					pointsLength = pointsString.length;
+					pointsFinal = pointsString.slice(6, pointsLength - 2);
+
+					if (pointsFinal > 1000) {
+						const songObject = { title: artistNameFinal, image: imageFinal, artistId: idFinal, projectedRank: pointsFinal };
+						songArray.push(songObject);
+					}
+
+				}
+
+			}
 	
 			}
 
 		})
 
 }
+
+function searchArray(arr, val) {
+	return arr.some(obj => Object.values(obj).includes(val));
+  }
 
 
 function generateCards (topResults) {
@@ -82,8 +78,15 @@ function generateCards (topResults) {
 
 				let newScore = score.toLocaleString("en-US");
 
+				let threePointSearch = searchArray(songArray, artistName);
+				if (threePointSearch == true) {
+					artistValue = 3;
+				} else {
+					artistValue = 1;
+				}
+
 				trueResultsLength++;
-				let artistValue = 3;
+
 
 
 		$("#artistcardsparent").append(`<label class="card-checkBox-label position-relative label">
@@ -114,6 +117,11 @@ function generateCards (topResults) {
 								</div>
 								<div class="overlay position-absolute"></div>
 							</label>`);
+							pointsSpent = pointsSpent - artistValue;
+							let selected = searchArray(entryObject['artists'], artistName);
+							if (selected == true) {
+								document.getElementById(id).checked = true;
+							}
 	}}}
 
 	if (trueResultsLength == 0) {
@@ -135,7 +143,9 @@ function generateCards (topResults) {
 
 	$(".checkbox-input").click(function(){
 
-		let artistValue = 3;
+		let key = getKeyByIdSearch(topResults, this.id)
+		let artistName = topResults[key].name;
+		let threePointSearch = searchArray(songArray, artistName);
 
 		console.log(pointsSpent + artistValue)
 
@@ -153,14 +163,17 @@ function generateCards (topResults) {
 			let score = (Math.round((topResults[key].cm_artist_score)/100)).toLocaleString("en-US");
 			let artistName = topResults[key].name;
 			let pic = topResults[key].image_url;
-			let artistValue = 3;
+			if (threePointSearch == true) {
+				artistValue = 3;
+			} else {
+				artistValue = 1;
+			}
 
 
 		// Make sure that the user isn't overspending
 		if (pointsSpent + artistValue <= 10) {
 
 			pointsSpent = pointsSpent + artistValue;
-
 
 
 
@@ -188,7 +201,7 @@ function generateCards (topResults) {
 
 			document.getElementById('remainingPoints1').innerHTML = `${10-pointsSpent}/10`;
 			document.getElementById('remainingPoints2').innerHTML = `${10-pointsSpent}/10`;
-			artistObject = { id: this.id, value: artistValue}
+			artistObject = { artist: artistName, id: this.id, value: artistValue}
 			entryObject["artists"].push(artistObject);
 			// let id = topResults[key].id;
 
@@ -223,8 +236,6 @@ function generateCards (topResults) {
 
 
 		}else{
- 
-				pointsSpent = pointsSpent - artistValue;
 
 
 			// If 7 or less, enable 3's again
@@ -270,7 +281,6 @@ function generateCards (topResults) {
 };
 
 function generateInitialCards (artistData) {
-
 
 		let score = (Math.round((artistData.projectedRank)/100)).toLocaleString("en-US");
 		let artistName = artistData.title;
@@ -359,7 +369,7 @@ function generateInitialCards (artistData) {
 
 			document.getElementById('remainingPoints1').innerHTML = `${10-pointsSpent}/10`;
 			document.getElementById('remainingPoints2').innerHTML = `${10-pointsSpent}/10`;
-			artistObject = { id: this.id, value: artistValue}
+			artistObject = { artist: artistName, id: this.id, value: artistValue}
 			entryObject["artists"].push(artistObject);
 
 			//let id = songArray[key].artistId;

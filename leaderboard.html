@@ -1,0 +1,412 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Leaderboard | Playlist</title>
+        <script src='jquery.js'></script>
+        <script src='updateBalances.js'></script>
+        <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1284.0.min.js"></script>
+        <script src="makeLeaderboard.js"></script>
+        <link rel="shortcut icon" href="Images/favicon.png"/>
+    </head>
+
+    <style>
+
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;400;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@100;200;400;600&display=swap');
+
+        .background {
+            position: fixed;
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            margin-top: 0;
+            background-color: black;
+        }
+        .scroll {
+            width: 100vw;
+            height: 100vh;
+            position: fixed;
+            margin: 0;
+        }
+        .blob1 {
+            position: absolute;
+            transform: rotate(180deg);
+            display: inline-flex;
+            float: left;
+            margin-left: 30%;
+            margin-top: 22%;
+        }
+        .topThree {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 50%;
+            height: 30%;
+            max-width: 800px;
+            min-width: 600px;
+            max-height: 640px;
+            min-height: 380px;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+        .secondPlace {
+            display: block;
+            margin-left: 0;
+            float: left;
+            height: 100%;
+            width: 25%;
+            text-align: center;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 25px;
+        }
+        .firstPlace {
+            display: block;
+            margin-left: 0;
+            float: left;
+            height: 100%;
+            width: 50%;
+            text-align: center;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 25px;
+        }
+        .thirdPlace { 
+            display: block;
+            margin-left: 0;
+            float: left;
+            height: 100%;
+            width: 25%;
+            text-align: center;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 25px;
+        }
+        .topThreeImage {
+            width: 75%;
+            margin-left: 12.5%;
+            margin-right: 12.5%;
+            margin-top: 12.5%;
+        }
+        .numberOneImage {
+            width: 100%;
+        }
+        .yourRank {
+            background-color: rgb(33, 33, 33);
+            color: white;
+            margin-top: 0;
+            width: 400px;
+            height: 6%;
+            display: flex;
+            margin-left: auto;
+            margin-right: auto;
+            border-radius: 999px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 400;
+            font-size: 25px;
+            text-overflow: ellipsis;
+            align-items: center;
+            text-align: right;
+        }
+        .yourPoints {
+            text-shadow:
+            /* White glow */
+                0 0 7px #fff,
+                0 0 10px #fff,
+                0 0 21px #fff;
+            flex-direction: row-reverse;
+            float: right;
+        }
+        header {
+            background-image: linear-gradient(to right, #7654E0 0%, #F02164 50%, #FF834D 100%);
+            color: #fff;
+            height: 60px;
+            display: flex;
+            align-items: center;
+        }
+
+        nav ul {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            display: flex;
+        }
+
+        nav li {
+            margin-left: 100px;
+        }
+
+        nav li:last-child {
+            margin-right: 0;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        nav a:hover {
+            background-color: #fff;
+            color: #333;
+            cursor: pointer;
+        }
+        .scrollRanks {
+            width: 700px;
+            height: 50%;
+            margin: auto;
+            margin-top: 20px;
+            overflow: scroll;
+        }
+        .scrollRankList {
+            background-color: rgb(59, 59, 59);
+            color: white;
+            margin-top: 0;
+            width: 500px;
+            height: 75px;
+            display: flex;
+            margin-left: auto;
+            margin-right: auto;
+            border-radius: 999px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 400;
+            font-size: 25px;
+            text-overflow: ellipsis;
+            align-items: center;
+        }
+        .rankNumber {
+            font-family: 'Inter', sans-serif;
+            color: white;
+        }
+        .item {
+            display: flex;
+            align-items: center;
+            width: 550px;
+            margin: auto;
+            font-size: 30px;
+            margin-bottom: 5px;
+        }
+
+    </style>
+
+    <body id='background' class='background'>
+
+        <div class='blob1'>
+            <img src="Images/background.png">
+        </div>
+
+        <div id='wholeThing' class='scroll'>
+
+            <header>
+                <nav>
+                  <ul>
+                    <li><img style="height: 40px; position: absolute; margin-top: -10px;" src='Images/Playlist-Logo-White.png'></li>
+                    <li><a href="https://playlistgames.carrd.co">HOME</a></li>
+                    <li><a href="entries.html">MY ENTRIES</a></li>
+                    <li><a href="leaderboard.html">LEADERBOARD</a></li>
+                    <li><a href="fantasy.html">STAR BATTLES</a></li>
+                    <li><a href="overunder.html">POP PARLAY</a></li>
+                  </ul>
+                </nav>
+              </header>
+
+            <div class='topThree'>
+
+                <div class='secondPlace'><b style='position: relative; top: 30%; font-size: 30px;'>2</b>
+
+                    <img class='topThreeImage' style='margin-top: 90%' src='Images/Profile-photo.png'>
+                    <b id='numberTwoName' style='position: relative;'></b>
+                    <div style='position: relative; font-weight: 100;' id='numberTwoPoints'></div>
+
+                </div>
+                <div class='firstPlace'><b style='position: relative; top: 5%; font-size: 40px;'>1</b>
+
+
+                    <img class='numberOneImage' src='Images/Number-One.png' style='margin-top: -10%;'>
+
+                    <b id='numberOneName' style='position: relative; top: -20%; font-size: 35px;'></b>
+                    <div style='position: relative; font-weight: 100; top: -20%;' id='numberOnePoints'></div>
+
+
+                </div>
+                <div class='thirdPlace'><b style='position: relative; top: 30%; font-size: 30px;'>3</b>
+                    <img class='topThreeImage' style='margin-top: 90%' src='Images/Profile-photo.png'>
+                    <b id='numberThreeName' style='position: relative;'></b>
+                    <div style='position: relative; font-weight: 100;' id='numberThreePoints'></div>
+                </div>
+
+            </div>
+
+            <div class='lowerRanks'>
+                <div id='yourRankNumber'>5</div>
+                <div class='yourRank' id='yourRank'>
+                    <img class='bottomImage' style='height: 100%;' src='Images/Profile-photo.png'>
+                    <div style='margin-left: 5%; margin-right: 5%;'>Your Current Points</div>
+                    <div class='yourPoints' id='yourPoints'></div>
+                </div>
+            </div>
+            <div id='scrollRanks' class='scrollRanks'>
+
+            </div>
+
+        </div>
+            
+        <script>
+
+            ///////////// LENGTHY LOGIN PROCESS WITH MASTER KEYS (HIDDEN IN SESSIONSTORAGE FOR SECURITY) ////////////
+
+            AWS.config.region = 'us-west-2';
+            AWS.config.credentials = new AWS.CognitoIdentityCredentials({IdentityPoolId: 'us-west-2:de570cb5-acb3-4efd-9863-a52052033cbc'})
+
+            var credKeys = [
+                                    'accessKeyId',
+                                    'secretAccessKey',
+                            ];
+
+
+            //credKeys.forEach(function(key) {
+            //    AWS.config.credentials[key] = sessionStorage.getItem(key);
+            //});
+
+            AWS.config.credentials = new AWS.CognitoIdentityCredentials({IdentityPoolId: 'us-west-2:de570cb5-acb3-4efd-9863-a52052033cbc'})
+            AWS.config.update({
+                    maxRetries: 3,
+                    httpOptions: {timeout: 30000, connectTimeout: 5000},
+                    region: 'us-west-2',
+                    accessKeyId: sessionStorage.getItem('accessKeyId'),
+                    secretAccessKey: sessionStorage.getItem('secretAccessKey'),
+            });
+
+
+
+            const cognitoIdentityServiceProvider = new AWS.CognitoIdentityServiceProvider();
+
+            cognitoIdentityServiceProvider.getUser({AccessToken: sessionStorage.getItem('accessToken')}, function(err, data) {
+                if (err) {
+                    console.log(err);
+                    window.location.href = "login.html";
+                } else {
+                    console.log(data);
+                    userEmail = data.UserAttributes[3]["Value"];
+
+                    username = data.UserAttributes[2]["Value"];
+                    //document.getElementById('username').innerHTML = username;
+
+                    console.log(userEmail, username);
+
+                    getBalances(userEmail);
+                    asyncActivate();
+
+                    }
+                });
+
+            
+            //////// END OF PROCESS ////////
+
+
+
+            makeLeaderboard();
+
+            function logScores (leaderboard) {
+
+                console.log(leaderboard)
+                // Generate #1 Spot
+                document.getElementById('numberOneName').innerHTML = leaderboard[0]['username'];
+                document.getElementById('numberOnePoints').innerHTML = (leaderboard[0]['score'] + " Points");
+                // Generate #2 Spot
+                document.getElementById('numberTwoName').innerHTML = leaderboard[1]['username'];
+                document.getElementById('numberTwoPoints').innerHTML = (leaderboard[1]['score'] + " Points");
+                // Generate #3 Spot
+                document.getElementById('numberThreeName').innerHTML = leaderboard[2]['username'];
+                document.getElementById('numberThreePoints').innerHTML = (leaderboard[2]['score'] + " Points");
+
+            }
+
+            function getObjectKey(obj, value) {
+                return Object.keys(obj).find((key) => obj[key].currentRank === String(value));
+            }
+
+
+            function getYourPoints(email) {
+
+                console.log("getting your points...")
+
+                AWS.config.update({region: 'us-west-2'});
+
+                // Create the DynamoDB service object
+                var ddb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
+
+                var params = {
+                TableName: 'userBalances',
+                Key: {
+                    'email': {S: email}
+                },
+                ProjectionExpression: 'balance'
+                };
+
+                // Call DynamoDB to read the item from the table
+                ddb.getItem(params, function(err, data) {
+                if (err) {
+                    console.log("Error", err);
+                } else {
+                    //console.log("Success", data.Item);
+                    balanceString = JSON.stringify(data.Item.balance)
+                    balanceLength = balanceString.length
+                    balanceFinal = Number(balanceString.slice(6,balanceLength-2));
+                    document.getElementById('yourPoints').innerHTML = balanceFinal;
+
+                    };
+                })
+
+            }
+
+            function generateRestOfRanks(leaderboard) {
+                
+                console.log("RANKS: " + leaderboard.length)
+                length = leaderboard.length;
+
+                for (i=3; i < 100; i++) {
+
+                    let rank = i+1;
+                    let name = leaderboard[i]['username'];
+                    let score = leaderboard[i]['score'];
+
+                    let htmlString = `
+                    <div class='item'>
+                        <div class='rankNumber'>${rank}</div>
+                        <div class='scrollRankList' id='scrollRankList'>
+                            <img class='bottomImage' style='height: 100%;' src='Images/Profile-photo.png'>
+                            <div style='margin-left: 5%; margin-right: 5%;'>${name}</div>
+                            <div class='yourPoints' id='yourPoints'>${score}</div>
+                        </div>
+                    </div>
+                    `
+                    const parent = document.getElementById('scrollRanks');
+
+                    let col = document.createElement("div");
+                    col.className = 'item'
+                    col.innerHTML= htmlString;
+
+                    parent.appendChild(col);
+
+
+                }
+                
+
+            }
+
+
+
+        </script>
+
+    </body>
+
+</html>

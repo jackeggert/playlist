@@ -1,0 +1,1630 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Pop Parlay | Playlist</title>
+        <script src='jquery.js'></script>
+        <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1284.0.min.js"></script>
+        <script src='getCharts.js'></script>
+        <script src='getBalances.js'></script>
+        <script src='submitEntry.js'></script>
+        <script src='updateBalances.js'></script>
+        <script src='makeArrays.js'></script>
+        <link rel="shortcut icon" href="Images/favicon.png"/>
+        <script src='getPointsScored.js'></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.7.1/lottie.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    </head>
+
+    <style>
+
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;400;600&display=swap');
+
+        .blob1 {
+            position: absolute;
+            transform: rotate(180deg);
+            display: inline-flex;
+            float: left;
+            margin-left: 30%;
+            margin-top: 22%;
+        }
+        .background {
+            position: fixed;
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            margin-top: 0;
+            background-color: #010305;
+        }
+        .categoriesAndArtists {
+            width: 1050px;
+            height: 95%;
+            margin-top: 2.5%;
+            margin-left: 2.5%;
+            position: fixed;
+        }
+        .scroll {
+            width: 100vw;
+            max-width: 1920px;
+            height: 100vh;
+            max-height: 1080px;
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .picks {
+            width: 375px;
+            height: 85%;
+            border-color: #7a7a7a;
+            border-style: solid;
+            float: right;
+            margin-top: 2.5%;
+            margin-right: 2.5%;
+            text-align: center;
+            color: rgb(201, 201, 201);
+            font-size: 20px;
+            font-family: 'Inter', sans-serif;
+        }
+        .categories {
+            height: 2%;
+            width: 100%;
+            font-family: 'Inter', sans-serif;
+        }
+        .aList {
+            display: flex;
+            width: 75%;
+            height: 100%;
+            float: left;
+            margin-right: 2.5%;
+            text-align: left;
+            font-size: 15px;
+            color: rgb(140,82,255);
+            font-weight: 600;
+            margin-top: 5px;
+        }
+        .artists {
+            margin: 0;
+            margin-left: -2%;
+            margin-top: 5%;
+            height: 85%;
+            width: 100%;
+            overflow: scroll;
+        }
+        .artistCard {
+            background-color: white;
+            height: 315px;
+            margin-top: 5%;
+            width: 200px;
+            margin-right: 3%;
+            margin-left: 2%;
+            float: left;
+            border-bottom-left-radius: 45px;
+            border-bottom-right-radius: 45px;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            justify-content: center;
+            background-size: 100%;
+            background-position-x: center;
+            background-position-y: top;
+            scale: 1;
+            transition: scale 0.3s;
+            position: relative;
+            box-sizing: border-box;
+        }
+        ::-webkit-scrollbar {
+            width: 12px;       
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent ;       
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #8d8d8d;   
+            border-radius: 20px;       
+            border: 3px solid #8d8d8d; 
+            height:50px; 
+            transition: background-color 0.3s;
+            transition: border 0.3s;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            cursor: pointer;
+            background-color: #a3a3a3; 
+            border: 3px solid #a3a3a3; 
+        }
+        ::-webkit-scrollbar-corner {
+            background-color: transparent;
+        }
+        .artistCard:hover {
+            cursor: pointer;
+            scale: 1.025;
+        }
+        .selectedCategory {
+            background-color: white;
+            color: black;
+        }
+        .logo {
+            height: 40%;
+            margin-top: 10%;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 5%;
+            filter: invert(1);
+        }
+        .search {
+            background-color: transparent;
+            border-color: #7a7a7a;
+            border-radius: 5px;
+            width: 20%;
+            height: 30px;
+            border-width: 1px;
+            float: bottom;
+            float: left;
+            border-style: solid;
+            color: white;
+        }
+        .metricTag {
+            background-color: #290D77;
+            position: absolute;
+            bottom:0;
+            width: 100%;
+            height: 22.5%;
+            border-bottom-left-radius: 44px;
+            border-bottom-right-radius: 44px;
+            display: table-cell;
+            vertical-align: middle;
+        }
+        .reinvert {
+            filter: invert(0);
+        }
+        .invisible {
+            display: none;
+            visibility: hidden;
+        }
+        .chartLogo {
+            height: 7%;
+            float: left;
+            filter: invert(1);
+            margin: 5%;
+            opacity: 0.7;
+        }
+        .chartLogo:hover {
+            opacity: 1;
+        }
+        .checkBox {
+            height: 7.7%;
+            float: right;
+            filter: invert(1);
+            margin: 4.5%;
+        }
+        .artistCardTextbox {
+            position: absolute;
+            bottom: 22%;
+            width: 100%;
+            height: 50%;
+            text-align: center;
+            font-family: 'Inter', sans-serif;
+            color: white;
+            background: rgb(0,0,0);
+            background: linear-gradient(0deg, rgba(0,0,0,1) 0%,rgba(255,255,255,0) 100%);
+        }
+        p {
+            margin-bottom: 2px;
+            margin-top: 0px;
+        }
+        .uncheckedBox {
+            height: 7%;
+            float: right;
+            filter: invert(1);
+            margin: 5%;
+        }
+        .glow {
+            box-shadow:inset 0 0 25px #b189ff, 0 0 25px #b189ff;
+        }
+        .nopicksimg {
+            margin-left: auto;
+            margin-right: auto;
+            width: 70%;
+        }
+        .leftSide {
+            text-align: center;
+            width: 49%;
+            float: left;
+            height: 100%;
+            font-family: 'Inter', sans-serif;
+            color: white;
+            font-size: 15px;
+            font-weight: 200;
+            margin: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            
+        }
+        .rightSide {
+            text-align: center;
+            width: 49%;
+            float: right;
+            height: 100%;
+            font-family: 'Inter', sans-serif;
+            color: white;
+            font-size: 15px;
+            font-weight: 200;
+            margin: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .middlePartition {
+            background-color: white;
+            height: 70%;
+            width: 1px;
+            display: inline-block;
+            align-items: center;
+            justify-content: center;
+            margin-top: 5%;
+        }
+        .picksZone {
+            height: 70%;
+            width: 100%;
+            position: relative;
+            overflow: scroll;
+        }
+        .betSettings {
+            height: 80px;
+            width: 100%;
+            margin-bottom: 0;
+            display: flex;
+            opacity: 0.95;
+        }
+        .betSelection {
+            background-color: #38393A;
+            width: 90%;
+            height: 120px;
+            margin-left: auto;
+            margin-right: auto;
+            border-radius: 20px;
+            font-family: 'Inter', sans-serif;
+            text-align: left;
+        }
+        .details {
+            margin: 5%;
+            margin-top: 2%;
+            width: 70%;
+            height: 80%;
+            color: rgb(163, 163, 163);
+            display: inline-block;
+        }
+        .infoBox {
+            width: 40%;
+            height: 100%;
+            margin-left: 5%;
+            margin-right: 5%;
+            border-radius: 20px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 200;
+        }
+        .centerText {
+            margin-top: 10px;
+            height: 50%;
+        }
+        .enterBet {
+            background-color: transparent;
+            border: 0;
+            outline: none;
+            text-align: center;
+            font-size: 25px;
+            color: white;
+            text-align: center;
+            width: 70%;
+            font-weight: 600;
+            overflow: scroll;
+        }
+        .artistCardSelected {
+            background-color: white;
+            height: 315px;
+            margin-top: 5%;
+            width: 200px;
+            margin-right: 3%;
+            margin-left: 2%;
+            float: left;
+            border-bottom-left-radius: 45px;
+            border-bottom-right-radius: 45px;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            justify-content: center;
+            background-size: 100%;
+            background-position-x: center;
+            background-position-y: top;
+            scale: 1.025;
+
+            position: relative;
+            box-sizing: border-box;
+        }
+        .artistCardSelected:hover {
+            cursor: pointer;
+        }
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+            color: white;
+            opacity: 1; /* Firefox */
+        }
+        input:focus::placeholder {
+            color: transparent;
+        }
+        .bottom {
+            width: 100%;
+            height: 160px;
+            margin: auto;
+        }
+        .placeEntryButton {
+            background-color: rgb(140,82,255);
+            height: 40%;
+            width: 90%;
+            color: white;
+            border-radius: 20px;
+            border: none;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 20px;
+            opacity: 0.6;
+            margin-top: 3%;
+        }
+        .buttonHover {
+            opacity: 1;
+        }
+        .buttonHover:hover {
+            cursor: pointer;
+        }
+        .currency-wrap{
+		    position: relative;
+        }
+        .currency-code{
+            position: absolute;
+            left: 8px;
+            top: 2px;
+        }
+        .upOrDownButton {
+            float: right;
+            width: 95%;
+            height: 10%;
+            margin-right: 2.5%;
+            align-items: center;
+        }
+        .loading {
+            width: 10%;
+            margin: auto;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            -webkit-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+        }
+        .balance {
+            margin-top: 4%;
+            font-weight: 400;
+            opacity: 1;
+            color: white;
+            font-size: 12px;
+        }
+        .errorMsg {
+            color: red;
+            font-size: 14px;
+            margin-top: 3%;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            height: 10%;
+        }
+        .invisibleError {
+            visibility: hidden;
+        }
+        .explanation {
+            height: 40%;
+            position: absolute;
+            z-index: 100;
+            margin-top: 90%;
+            margin-left: 85%;
+        }
+        header {
+            background-image: linear-gradient(to right, #7654E0 0%, #F02164 50%,#FF834D 100%);
+            color: #fff;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        nav ul {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            display: flex;
+        }
+
+        nav li {
+            margin-left: 100px;
+        }
+
+        nav li:last-child {
+            margin-right: 0;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        nav a:hover {
+            background-color: #fff;
+            color: #333;
+            cursor: pointer;
+        }
+        .howToPlay:hover {
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        .instructions {
+            width: 142.3214296vh;
+            height: 80vh;
+            position: absolute;
+            margin: auto;
+        }
+        .grey {
+            height: 100%;
+            width: 100%;
+            background-color: black;
+            position: absolute;
+            opacity: 0.7;
+        }
+        .x {
+            position: absolute;
+            margin-left: 94vh;
+            margin-top: 10vh;
+            height: 20px;
+            width: 20px;
+        }
+        .x:hover {
+            cursor: pointer;
+        }
+        .entrySubmitted {
+            width: 50vw;
+            height: 28.125vw;
+            position: absolute;
+            left: 50%;
+            -webkit-transform: translateX(-50%); 
+            transform: translateX(-50%);
+            top: 20%;
+        }
+        .entrySubmitted-pic {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+        }
+        .greenLine {
+            border-radius: 999px;
+            width: 0%;
+            background-color: rgb(96, 58, 173);
+            height: 1.25vh;
+            position: absolute;
+            margin-left: 16.5%;
+            margin-top: 37.75%;
+            opacity: 0.75;
+        }
+        .confetti {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: 50%;
+            -webkit-transform: translateX(-50%); 
+            transform: translateX(-50%);
+        }
+        .graph {
+            left: 50%;
+            top: 50%;
+            width: 50vh;
+            min-width: 600px;
+            height: 1000px;
+            background-color: rgb(12, 12, 12);
+            position: absolute;
+            -webkit-transform: translate(-50%, -50%); 
+            transform: translate(-50%, -50%);
+            border-radius: 20px;
+            border-color: rgb(242, 0, 255);
+            border-width: 1px;
+            border-style: solid;
+        }
+        .loading2 {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            -webkit-transform: translate(-50%, -50%); 
+            transform: translate(-50%, -50%);
+            height: 50px;
+            opacity: 0.8;
+        }
+        .leftSideParlay {
+            width: 49%;
+            height: 100%;
+            text-align: center;
+            float: left;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .rightSideParlay { 
+            width: 49%;
+            height: 100%;
+            text-align: center;
+            float: right;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .rankingBar {
+            width: 400px;
+            height: 225px;
+            top: -100px;
+            left: 350px;
+            position: absolute;
+        }
+        .cold {
+            font-size: 35px;
+            position: absolute;
+            left: 420px;
+            top: -20px;
+        }
+        .hot {
+            font-size: 35px;
+            position: absolute;
+            left: 640px;
+            top: -20px;
+        }
+
+
+    </style>
+
+    <body id='background' class='background'>
+
+        <div class='blob1'>
+
+        </div>
+
+        <div id='wholeThing' class='scroll'>
+
+
+            <header>
+                <nav>
+                  <ul>
+                    <li><img style="height: 40px; position: absolute; margin-top: -10px;" src='Images/Playlist-Logo-White.png'></li>
+                    <li><a href="https://playlistgames.carrd.co">HOME</a></li>
+                    <li><a href="entries.html">MY ENTRIES</a></li>
+                    <li><a href="leaderboard.html">LEADERBOARD</a></li>
+                    <li><a href="fantasy.html">STAR BATTLES</a></li>
+                    <li><a href="overunder.html">POP PARLAY</a></li>
+                  </ul>
+                </nav>
+              </header>
+
+
+            <div class='categoriesAndArtists'>
+                
+                <div class='categories'>
+                    <div id='aList' class='aList electedCategory'>
+                        <div class='howToPlay' onclick='scoring();'>S C O R I N G&nbsp;</div>&nbsp;&nbsp;|&nbsp;&nbsp;
+                        <div class='howToPlay' onclick='howToPlay();'>&nbsp;H O W &nbsp; T O &nbsp; P L A Y</div>
+                        <img src='Images/popularity-ranking-bar.png' class='rankingBar'>
+                        <div class='cold'>&#129398;</div>
+                        <div class='hot'>&#128293;</div>
+                    </div>
+                    <input id='search' class='search' type="text" placeholder="Search" oninput="search();">
+                </div>
+
+                <div class='artists' id='parent'>
+
+                    <img src="Images/loading.gif" class='loading' id='loading'>
+
+                </div>
+
+            </div>
+
+            <div class='picks'>
+
+                <div class='picksZone' id='picksZone'>
+                    <div id='nopicksimg'>
+                        <img src='Images/nopicks.png' class='nopicksimg' style="margin-top: 30%;">
+                        <div style="font-weight: 400;">No Artists Selected</div>
+                        <p style="font-size: 12.5px; margin-top: 15px; font-weight: 100;">Click artists to the left to select them.</p>
+                    </div>
+                    
+                </div>
+                <div id='betSettings' class="betSettings">
+
+                    <div style='background-color:rgb(126, 126, 126)' class='infoBox'>
+                        <div class='centerText'>
+                        Entry
+                        <div class="currency-wrap">
+                            <span class="currency-code">$</span>
+                            <input style="font-family: 'Inter', sans-serif;" type='number' id='enterBet' class='enterBet' placeholder="0.00" oninput="updateWinnings();">
+                        </div>
+                        </div>
+                    </div>
+                    <div style='background-color:#53388d' class='infoBox'>
+                        <div class='centerText'>
+                        To Win
+                        <div class="currency-wrap">
+                            <span id='currency-code' class="currency-code"></span>
+                            <p class='winnings' style='font-weight: 600; font-size: 25px; color: white; opacity: 1;' id='winnings'>---</p>
+                        </div>
+                        </div>
+                    </div>
+
+                    
+                </div>
+
+                <div class='bottom' id='bottom'>
+
+                    <div id='balance' class='balance'>B A L A N C E :&nbsp; <b id='balanceAmount' style='font-size:15px;'></b></div>
+                    <div id='errorMsg' class='errorMsg'>SELECT AT LEAST TWO ARTISTS.</div>
+                    <button id='placeEntryButton' class='placeEntryButton' onclick='placeEntry();'>Place Entry</button>
+
+                </div>
+
+            </div>
+
+            <div id='greyOut' class='grey invisible'></div>
+            <div id='graphContainer'>
+
+            </div>
+            <img id='instructions2' class='instructions invisible' src='Images/HowToPlay.png'>
+            <img id='instructions1' class='instructions invisible' src='Images/Scoring.png'>
+            <div id='entrySubmitted-container' class='entrySubmitted invisible'>
+                <div class='confetti' id='confetti'></div>
+                <img id='entrySubmitted' class='entrySubmitted-pic' src='Images/entry-submitted.png'>
+                <div id='greenLine' class='greenLine'></div>
+            </div>
+            <img id='instructionsX' onclick='xOut()' class='x invisible' src='Images/x-img.png'>
+
+        </div>
+            
+        <script>
+
+            artistArrayPopular = [];
+            imageArrayPopular = [];
+            genreArrayPopular = [];
+            rankArrayPopular = [];
+            projectedRankArrayPopular = [];
+            selectedArray = [];
+            projectedArray = [];
+            overUnderSelected = [];
+            over = [];
+            under = [];
+
+            selectedNumber = 0;
+
+
+
+
+
+            ///////////// LENGTHY LOGIN PROCESS WITH MASTER KEYS (HIDDEN IN SESSIONSTORAGE FOR SECURITY) ////////////
+
+            AWS.config.region = 'us-west-2';
+            AWS.config.credentials = new AWS.CognitoIdentityCredentials({IdentityPoolId: 'us-west-2:de570cb5-acb3-4efd-9863-a52052033cbc'})
+
+            var credKeys = [
+                                    'accessKeyId',
+                                    'secretAccessKey',
+                            ];
+
+
+            //credKeys.forEach(function(key) {
+            //    AWS.config.credentials[key] = sessionStorage.getItem(key);
+            //});
+
+            AWS.config.credentials = new AWS.CognitoIdentityCredentials({IdentityPoolId: 'us-west-2:de570cb5-acb3-4efd-9863-a52052033cbc'})
+            AWS.config.update({
+                    maxRetries: 3,
+                    httpOptions: {timeout: 30000, connectTimeout: 5000},
+                    region: 'us-west-2',
+                    accessKeyId: sessionStorage.getItem('accessKeyId'),
+                    secretAccessKey: sessionStorage.getItem('secretAccessKey'),
+            });
+
+
+
+            const cognitoIdentityServiceProvider = new AWS.CognitoIdentityServiceProvider();
+
+            cognitoIdentityServiceProvider.getUser({AccessToken: sessionStorage.getItem('accessToken')}, function(err, data) {
+                if (err) {
+                    console.log(err);
+                    window.location.href = "login.html";
+                } else {
+                    console.log(data);
+                    userEmail = data.UserAttributes[3]["Value"];
+
+                    username = data.UserAttributes[2]["Value"];
+                    //document.getElementById('username').innerHTML = username;
+
+                    console.log(userEmail, username);
+
+                    getBalances(userEmail);
+                    asyncActivate();
+
+                    }
+                });
+
+            
+            //////// END OF PROCESS ////////
+            
+            
+            async function asyncActivate() {
+                for (let i = 0; i < 150; i++) {
+                    makeArrays(i);
+                    getPointsScored(i);
+                }
+            }
+
+            cardsMade = false;
+            
+
+            window.setInterval( function(){
+                if (songArray.length == 150) {
+                    if (cardsMade == false) {
+                        cardsMade = true;
+                        generateCards();
+                    }
+                }
+            },10)
+
+            function getObjectKey(obj, value) {
+                return Object.keys(obj).find((key) => obj[key].currentRank === String(value));
+            }
+
+
+            function generateCards() {
+
+                document.getElementById('loading').classList.add('invisible');
+
+                console.log("TEST 2:" + balanceFinal)
+                document.getElementById('balanceAmount').innerHTML = "$"+(balanceFinal).toFixed(2);
+                    
+
+                for (let i = 0; i < 100; i++) {
+
+                // find key such that songArray[key].currentRank = i
+                let key = getObjectKey(songArray, i);
+                let key2 = getObjectKey(scoreArray, i)
+                console.log(key, key2)
+
+                
+                let artistName = songArray[key].title;
+                let artistImage = songArray[key].image;
+                let artistGenre = songArray[key].artist;
+                let projectedRank = Math.round((Number(songArray[key].projectedRank)/60)).toLocaleString("en-US");
+                let artistId = songArray[key].artistId;
+                let currentRank = Number(scoreArray[key2].points).toFixed(2);
+
+
+                nameString = String(artistName);
+
+                artistVariable = nameString.replace(/\W/g, '')
+
+
+                var today = new Date();
+                var dd1 = String(today.getDate() + 1).padStart(2, '0');
+                var mm1 = String(today.getMonth() + 1).padStart(2, '0'); 
+
+                var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+
+
+                var endDate = new Date();
+                var resultDate = endDate.setDate(endDate.getDate() + 4);
+                var dd2 = String(endDate.getDate()).padStart(2, '0');
+                var mm2 = String(endDate.getMonth() + 1).padStart(2, '0'); 
+
+                today = mm1 + '/' + dd1;
+                resultDate = mm2 + '/' + dd2;
+                
+
+                let htmlString = `
+                
+                            <div class='metricTag'>
+                                <div class='leftSide'>
+
+                                    <div id='points${artistId}' style="font-family: 'Impact'; margin-top: 0px; color: 'white'; margin-left: 10px; font-size: 25px;">${projectedRank}</div>
+                                </div>
+                                <div class='middlePartition'></div>
+                                <div class='rightSide'>
+                                    <div style="position: absolute; display:block; text-align: left;">Popularity Points</div>
+                                </div>
+                                
+                            </div>
+
+                            <div class='artistCardTextbox'>
+                                <p><b style="font-size: 25px; width: 100%; position: absolute; bottom: 30%; left: 50%; -webkit-transform: translateX(-50%); transform: translateX(-50%); font-weight: 600; text-size-adjust:auto;">${artistName}</b></p>
+                                <p><b style="font-size: 12.5px; width: 100%; position: absolute; bottom: 17.5%; left: 50%; -webkit-transform: translateX(-50%); transform: translateX(-50%); font-weight: 400;">${artistGenre}</b></p>
+                                <p id='dates' style="font-size: 10px; width: 100%; position: absolute; left: 50%; -webkit-transform: translateX(-50%); transform: translateX(-50%); bottom: 5%; font-weight: 200;">${today} 12am - ${resultDate} 12am</p>
+                            </div>
+
+                            <img id='chartLogo${artistId}' src='Images/chartlogo.webp' class='chartLogo' onclick='getPastScores(${artistId}, "${nameString}")'>
+                            <img id='uncheckedbox${artistId}' src='Images/uncheckedbox.webp' class='uncheckedBox'>
+                            <img id='checkedbox${artistId}' src='Images/checkedbox.png' class='checkBox invisible'>
+
+                            </div>
+
+                            `
+                            const parent = document.getElementById('parent');
+
+                            let col = document.createElement("div");
+                            col.className = 'artistCard'
+                            col.id = artistId;
+                            col.style="background-image: url('"+artistImage+"'); background-size: 250px 250px;";
+                            col.innerHTML= htmlString;
+                            
+
+                            parent.appendChild(col);
+                            
+
+
+
+                        }
+
+
+                    
+                for (let i = 0; i < 150; i++) {
+                    
+
+
+                    rank = i;
+                    let artistName = songArray[i].title;
+                    let artistImage = songArray[i].image;
+                    let artistGenre = songArray[i].artist;
+                    let projectedRank = songArray[i].projectedRank;
+                    let artistId = songArray[i].artistId;
+
+                    artistVariable = artistName.replace(/\W/g, '');
+
+                    document.getElementById(artistId).addEventListener("click", function() {
+
+                        if (event.target != document.getElementById(`chartLogo${artistId}`)) {
+                        
+                        if (document.getElementById(artistId).classList.contains('glow')) {
+
+
+                            artistVariable = artistName.replace(/\W/g, '')
+
+                            artistUnderscore = artistName.split(' ').join('_');
+
+                            index = selectedArray.indexOf(`${artistId}?name=${artistUnderscore}&image=${artistImage}&genre=${artistGenre}`);
+                            selectedArray.splice(index, 1);
+                            projectedArray.splice(index, 1);
+                            selectedNumber--;
+                            console.log("Subtracted by 1.")
+                            console.log(selectedNumber)
+                            document.getElementById(artistId).classList.remove('glow')
+                            document.getElementById(artistId).classList.remove('artistCardSelected')
+                            document.getElementById(artistId).classList.add('artistCard')
+                            artistVariable = artistName.replace(/\W/g, '')
+
+
+                            console.log(artistId + "Tag")
+                            const element = document.getElementById(artistId + "Tag");
+                            element.remove();
+                            
+
+                            document.getElementById('checkedbox' + artistId).classList.add('invisible');
+                            document.getElementById('uncheckedbox' + artistId).classList.remove('invisible');
+
+                            index = artistArrayPopular.indexOf(artistId);
+                            artistArrayPopular.splice(index, 1);
+
+                            errorCheck();
+
+                        }
+                        else {
+                            if (selectedNumber < 4) {
+
+                            intermediary = artistName.replace(/\W/g, '')
+                            artistVariable = intermediary.replace(/[0-9]/g, '');
+                            artistString = String(artistVariable);
+                            artistId = String(songArray[i].artistId);
+
+                            selectedNumber++;
+                            console.log(selectedNumber);
+                            document.getElementById(artistId).classList.add('glow');
+                            eval("var " + artistString + "Tag");
+                            console.log(artistString + "Tag")
+                            document.getElementById(artistId).classList.add('artistCardSelected')
+                            document.getElementById(artistId).classList.remove('artistCard')
+
+                            console.log(artistId)
+                            artistUnderscore = artistName.split(' ').join('_');
+
+                            selectedArray.push(`${artistId}?name=${artistUnderscore}&image=${artistImage}&genre=${artistGenre}`);
+
+
+                            if (Number(projectedRank) < 100000) {
+                                projectedArray.push(0 + projectedRank);
+                            } else {
+                                projectedArray.push(projectedRank);
+                            }
+
+                            points = Math.round(projectedRank/60).toLocaleString("en-US");;
+
+                            var today = new Date();
+                            var dd1 = String(today.getDate()).padStart(2, '0');
+                            var mm1 = String(today.getMonth() + 1).padStart(2, '0'); 
+
+                            var endDate = new Date();
+                            var resultDate = endDate.setDate(endDate.getDate() + 3);
+                            var dd2 = String(endDate.getDate()).padStart(2, '0');
+                            var mm2 = String(endDate.getMonth() + 1).padStart(2, '0'); 
+
+                            today = mm1 + '/' + dd1;
+                            resultDate = mm2 + '/' + dd2;
+
+                            let htmlString = `
+                                <div class='leftSideParlay'>
+                                    <div style='text-align: center;'>
+                                        <b style='text-overflow: ellipsis; display: block; line-height: 1em; max-height: 1em; color: rgb(228, 228, 228)'>${artistName}</b>
+                                        <p style='display: inline-block; display: block; font-size: 10px; margin-top: 5px;'>Current Points: <b>${points}</b></p>
+                                    </div>
+                                </div>
+                                <div class='middlePartition'></div>
+                                <div class='rightSideParlay'>
+                                    <div style='text-align: center; margin-top: -20%;'>
+                                        <b style='font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; display: block; line-height: 1em; max-height: 1em; color: rgb(228, 228, 228)'>POPULARITY</b>
+                                        <p style='display: inline-block; font-size: 12.5px; margin-top: 0px;'>NEXT 3 DAYS</p>
+                                        <div class='upOrDownButton'>
+                                            <img id='${artistId}Plus' src='Images/plus-icon-unselected.png' width='47.5%' style="margin-top:5px; cursor:pointer;">
+                                            <img id='${artistId}Minus' src='Images/minus-icon-unselected.png' width='47.5%' style="margin-top:5px; cursor:pointer;">
+                                        </div>
+                                    </div>
+                                    <img id='${artistId}X' src='Images/x-img.png' width='3.5%' style="position:absolute; margin-bottom: 90px; right: 20px; cursor:pointer; transform: translate(-50%, 0%);">
+                                </div>
+                            `
+                            const parent = document.getElementById('picksZone');
+
+
+                            let col = document.createElement("div");
+                            col.className = 'betSelection'
+                            col.innerHTML = htmlString;
+                            col.id = (artistId + "Tag");
+                            col.setAttribute("style", "margin-top:2%;");
+                            parent.appendChild(col);
+
+                            console.log('updating')
+                            document.getElementById('checkedbox' + artistId).classList.remove('invisible');
+                            document.getElementById('uncheckedbox' + artistId).classList.add('invisible');
+                            overUnderSelected[artistId] = false;
+
+                        function activateButtons() {
+                
+                            if (document.getElementById(artistId + "X")) {
+
+                                console.log('yep 1')
+
+                                document.getElementById(artistId + 'X').addEventListener("click", function() {
+
+                                    artistVariable = artistName.replace(/\W/g, '')
+                                    artistId = String(songArray[i].artistId);
+
+                                    console.log(selectedNumber)
+                                    console.log(artistVariable+ 'yep 2')
+                                    selectedNumber--;
+                                    console.log("Subtracted by 1 (X button).")
+                                    console.log(selectedNumber)
+
+                                    document.getElementById(artistId).classList.remove('glow')
+                                    document.getElementById(artistId).classList.remove('artistCardSelected')
+                                    document.getElementById(artistId).classList.add('artistCard')
+
+                                    const element = document.getElementById(artistId + "Tag");
+                                    element.remove();
+
+                                    document.getElementById('checkedbox' + artistId).classList.add('invisible');
+                                    document.getElementById('uncheckedbox' + artistId).classList.remove('invisible');
+
+                                    updateWinnings();
+
+                                    artistUnderscore = artistName.split(' ').join('_');
+
+                                    index = selectedArray.indexOf(`${artistId}?name=${artistUnderscore}&image=${artistImage}&genre=${artistGenre}`);
+                                    selectedArray.splice(index, 1);
+                                    projectedArray.splice(index, 1);
+                                
+                                    errorCheck();
+
+                                });
+
+                            } else {
+                                
+                                console.log('nope')
+                                setTimeout(activateButtons, 15);
+
+                            }
+                        
+                            if (document.getElementById(artistId + "Plus")) {
+
+
+                                console.log('yep 1: '+artistId)
+                                over[String(artistId)] = false;
+
+                                document.getElementById(artistId + 'Plus').addEventListener("click", function() {
+
+                                    artistVariable = artistName.replace(/\W/g, '')
+                                    artistId = String(songArray[i].artistId);
+
+                                    if (over[String(artistId)] == false) {
+                                        document.getElementById(artistId + 'Plus').src = "Images/plus-icon-selected.png";
+                                        over[String(artistId)] = true;
+                                        if (under[String(artistId)] == true) {
+                                            document.getElementById(artistId + "Minus").src = "Images/minus-icon-unselected.png"
+                                            under[String(artistId)] = false;
+                                        }
+
+                                        console.log('+')
+                                    } 
+                                    else {
+                                        document.getElementById(artistId + 'Plus').src = "Images/plus-icon-unselected.png";
+                                        over[String(artistId)] = false;
+                                        console.log('-')
+                                    }
+
+                                    errorCheck();
+
+                                });
+
+                                } else {
+
+                                console.log('nope')
+                                setTimeout(activateButtons, 15);
+
+                            }
+
+                            if (document.getElementById(artistId + "Minus")) {
+
+                                console.log('yep 1')
+                                under[String(artistId)] = false;
+
+                                document.getElementById(artistId + 'Minus').addEventListener("click", function() {
+
+                                    artistVariable = artistName.replace(/\W/g, '')
+                                    artistId = String(songArray[i].artistId);
+
+                                    if (under[String(artistId)] == false) {
+                                        document.getElementById(artistId + 'Minus').src = "Images/minus-icon-selected.png";
+                                        under[String(artistId)] = true;
+                                        if (over[String(artistId)] == true) {
+                                            document.getElementById(artistId + "Plus").src = "Images/plus-icon-unselected.png"
+                                            over[String(artistId)] = false;
+                                        }
+
+                                        console.log('+')
+                                    } 
+                                    else {
+                                        document.getElementById(artistId + 'Minus').src = "Images/minus-icon-unselected.png";
+                                        under[String(artistId)] = false;
+                                        console.log('-')
+                                    }
+
+                                    errorCheck();
+
+                                });
+
+                                } else {
+
+                                    console.log('nope')
+                                    setTimeout(activateButtons, 15);
+
+                                }
+
+
+
+                        }
+
+                        activateButtons();
+                        errorCheck();
+
+                        };}
+                    
+                    if (selectedNumber != 0) {
+                        console.log('updating')
+                        document.getElementById('nopicksimg').classList.add('invisible')}
+                    else {
+                        document.getElementById('nopicksimg').classList.remove('invisible')}
+                        document.getElementById('winnings').innerHTML = ('---')
+                    if (selectedNumber == 1) {
+                        document.getElementById('winnings').innerHTML = ('---')
+                        document.getElementById('currency-code').innerHTML = ''
+                        document.getElementById('placeEntryButton').style.cursor = 'default';
+                    }
+                    if (selectedNumber == 2) {
+                        document.getElementById('winnings').innerHTML = ((3 * document.getElementById('enterBet').value).toFixed(2));
+                        document.getElementById('currency-code').innerHTML = '$'
+                        document.getElementById('placeEntryButton').style.cursor= 'pointer';
+                        winAmount = ((3 * document.getElementById('enterBet').value).toFixed(2));
+                    }
+                    if (selectedNumber == 3) {
+                        document.getElementById('winnings').innerHTML = ((5 * document.getElementById('enterBet').value).toFixed(2))
+                        winAmount = ((5 * document.getElementById('enterBet').value).toFixed(2));
+                    }
+                    if (selectedNumber == 4) {
+                        document.getElementById('winnings').innerHTML = ((10 * document.getElementById('enterBet').value).toFixed(2))
+                        winAmount = ((10 * document.getElementById('enterBet').value).toFixed(2));
+                    }
+                        
+                }});
+
+
+
+                }
+
+            };
+
+
+            function updateWinnings() {
+                console.log('updating')
+                if (selectedNumber != 0) {
+                        document.getElementById('nopicksimg').classList.add('invisible')}
+                    else {
+                        document.getElementById('nopicksimg').classList.remove('invisible')}
+                        document.getElementById('winnings').innerHTML = ('---')
+                if (selectedNumber == 1) {
+                        document.getElementById('winnings').innerHTML = ('---')
+                        document.getElementById('currency-code').innerHTML = ''
+                        document.getElementById('placeEntryButton').style.cursor = 'default';
+                    }
+                if (selectedNumber == 2) {
+                        document.getElementById('winnings').innerHTML = ((3 * document.getElementById('enterBet').value).toFixed(2))
+                        document.getElementById('currency-code').innerHTML = '$'
+                        winAmount = ((3 * document.getElementById('enterBet').value).toFixed(2));
+                    }
+                if (selectedNumber == 3) {
+                        document.getElementById('winnings').innerHTML = ((5 * document.getElementById('enterBet').value).toFixed(2))
+                        winAmount = ((5 * document.getElementById('enterBet').value).toFixed(2));
+                    }
+                if (selectedNumber == 4) {
+                        document.getElementById('winnings').innerHTML = ((10 * document.getElementById('enterBet').value).toFixed(2))
+                        winAmount = ((10 * document.getElementById('enterBet').value).toFixed(2));
+                    }
+                errorCheck();
+            }
+
+
+
+            
+            function errorCheck() {
+
+                errorCounter = 0;
+
+                errorCounterOverUnder = 0;
+                var errorMsg = document.getElementById('errorMsg');
+                var length = selectedArray.length;
+                console.log("LENGTH: " + length);
+
+                errorMsg.classList.add('invisibleError');
+                document.getElementById('placeEntryButton').style.opacity = 1;
+                document.getElementById('placeEntryButton').style.cursor= 'pointer';
+
+
+                if (document.getElementById('enterBet').value > balanceFinal) {
+                    errorMsg.innerHTML = "NOT ENOUGH FUNDS.";
+                    errorCounter++;
+                    errorMsg.classList.remove('invisibleError');
+                    document.getElementById('placeEntryButton').style.cursor= 'default';
+                    document.getElementById('placeEntryButton').style.opacity = 0.6;}
+
+                if (document.getElementById('enterBet').value.length == 0) {
+                    errorMsg.innerHTML = "ENTER A BET AMOUNT.";
+                    errorCounter++;
+                    errorMsg.classList.remove('invisibleError');
+                    document.getElementById('placeEntryButton').style.cursor= 'default';
+                    document.getElementById('placeEntryButton').style.opacity = 0.6;}
+
+                    if (document.getElementById('enterBet').value == 0) {
+                    errorMsg.innerHTML = "ENTER A BET AMOUNT.";
+                    errorCounter++;
+                    errorMsg.classList.remove('invisibleError');
+                    document.getElementById('placeEntryButton').style.cursor= 'default';
+                    document.getElementById('placeEntryButton').style.opacity = 0.6;}
+
+
+                for (let i=0; i < length; i++) {
+                    console.log(length)
+                    //stringVariable = String(selectedArray[i]);
+                    //console.log(stringVariable)
+
+                    let text = String(selectedArray[i]);
+                    let nameIndex = selectedArray[i].indexOf("?name");
+                    let id = text.slice(0, nameIndex);
+
+                    if (over[id] == false) {
+                        if (under[id] == false) {
+                                    errorCounterOverUnder++;
+                                    errorCounter++;}}
+
+                }
+
+
+                console.log("ERRORS: "+ errorCounter);
+
+                if (errorCounterOverUnder != 0) {
+                    errorMsg.innerHTML = "CHOOSE UP OR DOWN FOR ALL ARTISTS.";
+                    errorMsg.classList.remove('invisibleError');
+                    document.getElementById('placeEntryButton').style.cursor= 'default';
+                    document.getElementById('placeEntryButton').style.opacity = 0.6;}
+
+
+                if (selectedNumber < 2) {
+
+                    errorMsg.innerHTML = "SELECT AT LEAST TWO ARTISTS.";
+                    errorMsg.classList.remove('invisibleError')
+                    document.getElementById('placeEntryButton').style.cursor= 'default';
+                    errorCounter++;
+                    document.getElementById('placeEntryButton').style.opacity = 0.6;}
+                    
+                };
+
+                var animationContainer = document.getElementById('confetti');
+                    var animation = bodymovin.loadAnimation({
+                        container: animationContainer,
+                        renderer: 'svg',
+                        loop: true,
+                        autoplay: true,
+                        path: 'confetti.json' // URL of the Lottie JSON file
+                    });
+
+              
+                    document.getElementById('placeEntryButton').addEventListener('click', function() {
+                    animation.goToAndPlay(0);
+                    animation.setSpeed(.75);
+                });
+
+
+            function placeEntry() {
+
+                if (errorCounter == 0) {
+
+                    parlayArray = [];
+
+                    parlayLength = selectedArray.length;
+                    for (let i = 0; i < parlayLength; i++) {
+
+                        let endIndex = selectedArray[i].indexOf("?name=");
+                        let artistId = String(selectedArray[i]).slice(0, endIndex);
+
+                        if (over[String(artistId)] == true) {
+                            parlayArray.push(selectedArray[i] + "&ou=over" + "&proj=" + projectedArray[i])
+                        }
+                        if (under[String(artistId)] == true) {
+                            parlayArray.push(selectedArray[i] + "&ou=under" + "&proj=" + projectedArray[i])
+                        }
+
+                    }
+
+                    let date = new Date(); // UTC in lambda.
+                    var resultDate = date.setDate(date.getDate() + 3);
+                    let dateString = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Los_Angeles', year: 'numeric', month: '2-digit', day: '2-digit'}).format(resultDate);
+
+                    wagerAmount = Number(document.getElementById('enterBet').value);
+
+                    updateWinnings();
+
+
+                    userid = username;
+                    submitEntry(dateString);
+                    updateBalances();
+
+                }}
+
+                function finalizeBetPlaced() {
+                    
+                    document.getElementById('greyOut').classList.remove('invisible');
+                    document.getElementById('entrySubmitted-container').classList.remove('invisible');
+                    document.getElementById('entrySubmitted-container').style.opacity = '1';
+                    document.getElementById('greyOut').style.opacity = '.7';
+                    document.getElementById('enterBet').value = '';
+
+                    const animationDuration = 2000; // set the animation duration to 2 seconds
+
+                    // Play bet placed sound
+                    const audio = new Audio('place-bet.wav');
+                    audio.play();
+
+
+                    document.getElementById('greenLine').animate(
+                        { width: ['0%', '67%'] },
+                    { 
+                        duration: animationDuration,
+                        easing: 'linear' // make the animation linear for a smoother effect
+                    }
+                    );
+
+
+                    setTimeout(() => {
+
+                        document.getElementById('greenLine').style.width= '67%';
+                        document.getElementById('greyOut').style.opacity = '0'; // set the opacity to 0 to make the div invisible
+                        document.getElementById('greyOut').style.transition = 'opacity 0.3s ease-in-out'; // add a transition for the opacity property
+                        document.getElementById('entrySubmitted-container').style.opacity = '0'; // set the opacity to 0 to make the div invisible
+                        document.getElementById('entrySubmitted-container').style.transition = 'opacity 0.3s ease-in-out'; // add a transition for the opacity property
+
+                        setTimeout(() => {
+                            document.getElementById('entrySubmitted-container').classList.add('invisible')
+                            document.getElementById('greyOut').classList.add('invisible')
+                            document.getElementById('greenLine').style.width= '0%';
+                        }, 300);
+
+
+
+                    }, 2000);
+
+
+
+                    // window.location.reload();
+
+                    balanceFinal = balanceFinal - wagerAmount;
+                    document.getElementById('balanceAmount').innerHTML = "$"+(balanceFinal).toFixed(2);
+
+
+                    for (i = 0; i < selectedArray.length; i++) {
+
+                        let text = String(selectedArray[i]);
+                        let nameIndex = selectedArray[i].indexOf("?name");
+                        let id = text.slice(0, nameIndex);
+                        document.getElementById(id).classList.remove("glow");
+                        document.getElementById(id).classList.remove("artistCardSelected");
+                        document.getElementById(id).classList.add("artistCard");
+                        document.getElementById(id + "Tag").remove();
+
+                        document.getElementById('checkedbox' + id).classList.add('invisible');
+                        document.getElementById('uncheckedbox' + id).classList.remove('invisible');
+ 
+                    }
+
+
+                    //document.getElementById('picksZone').innerHTML = '';
+                    selectedNumber = 0;
+                    selectedArray = [];
+                    projectedArray = [];
+                    errorCounterOverUnder = 0;
+                    over = [];
+                    under = [];
+                    errorCheck();
+                    document.getElementById('nopicksimg').classList.remove('invisible')
+
+                    document.getElementById('winnings').innerHTML = '---'
+
+
+                }
+
+            
+
+            function popUp(tag) {
+
+                // Can't get this shit to work
+                document.getElementById('explanation' + tag).classList.remove('invisible')
+
+            }
+
+
+            function search() {
+
+                searchCriteria = document.getElementById('search').value;
+                searchCriteriaLowercase = searchCriteria.toLowerCase();
+                console.log(searchCriteriaLowercase);
+                for (let i = 0; i < 150; i++) {
+
+                    let key = getObjectKey(songArray, i);
+
+                    
+                    let artistName = songArray[key].title;
+
+                    let artistId = songArray[key].artistId;
+
+                    rank = String(i);
+
+                    console.log(rank)
+
+                    nameString = String(artistName);
+
+                    artistNameLowercase = nameString.toLowerCase();
+
+                    if (!searchCriteriaLowercase) {
+
+                        document.getElementById(artistId).classList.remove('invisible')
+
+                    }
+
+                    if (!artistNameLowercase.includes(searchCriteriaLowercase)) {
+
+                        document.getElementById(artistId).classList.add('invisible')
+
+                    } else {
+
+                        document.getElementById(artistId).classList.remove('invisible');
+
+                    }
+
+                }
+
+            }
+
+            document.getElementById('enterBet').onchange = setTwoNumberDecimal;
+
+            function setTwoNumberDecimal(event) {
+                this.value = parseFloat(this.value).toFixed(2);
+            }
+
+
+            function howToPlay() {
+                document.getElementById('instructions2').classList.remove('invisible')
+                document.getElementById('greyOut').classList.remove('invisible')
+                document.getElementById('instructionsX').classList.remove('invisible')
+            }
+
+            function scoring() {
+                document.getElementById('instructions1').classList.remove('invisible')
+                document.getElementById('greyOut').classList.remove('invisible')
+                document.getElementById('instructionsX').classList.remove('invisible')
+            }
+
+            function xOut() {
+                document.getElementById('instructions1').classList.add('invisible')
+                document.getElementById('instructions2').classList.add('invisible')
+                document.getElementById('instructionsX').classList.add('invisible')
+                document.getElementById('greyOut').classList.add('invisible')
+            }
+
+            let accessToken;
+
+            getToken = async () => {
+
+                const settings = {
+                    method: 'POST',
+                    body: '{"refreshtoken":"qynJbd9erEHYvh5WuA7zDtbRyxaVAeyopnrAyvn4KdLlKQmDVhcqrHJEf9gR4dTS"}',
+                    headers: {
+                    "Content-Type": "application/json"
+                    }
+                };
+
+                fetch('https://u6dqtp7h3vrd5tmd2kzcyrevfu0oterb.lambda-url.us-west-2.on.aws/?url=https://api.chartmetric.com/api/token', settings)
+                .then(response => response.json())
+                .then(data => {
+                // do something with the data
+                accessToken = data.token;
+                })
+                .catch(error => {
+                // handle any errors
+                console.error(error);
+                });
+
+            }
+
+            getToken();
+
+
+            async function getPastScores (id, artistName) {
+
+                document.getElementById('graphContainer').innerHTML = `
+                <img id='loading2' class='loading2' src='Images/loading2.gif'>
+                <canvas class='graph invisible' id="myChart"></canvas>
+                `
+
+                document.getElementById('greyOut').classList.remove('invisible');
+
+                try {
+                const response = await fetch(`https://mxteoqnybf42d63eqgygcmi5aa0rcvrb.lambda-url.us-west-2.on.aws/?id=${id}&accessKey=${accessToken}`)
+                .then( response => response.json())
+                .then( data => {
+                    console.log(data)
+
+                    // Define the data points
+                    const dataChart = {
+                    labels: [data['obj'][0]['timestp'], data['obj'][1]['timestp'], data['obj'][2]['timestp'], data['obj'][3]['timestp'], data['obj'][4]['timestp'], data['obj'][5]['timestp'], data['obj'][6]['timestp'], data['obj'][7]['timestp']],
+                    datasets: [{
+                        label: '',
+                        data: [data['obj'][0]['score']*16667, data['obj'][1]['score']*16667, data['obj'][2]['score']*16667, data['obj'][3]['score']*16667, data['obj'][4]['score']*16667, data['obj'][5]['score']*16667, data['obj'][6]['score']*16667, data['obj'][7]['score']*16667],
+                        fill: true,
+                        borderColor: 'rgb(242, 0, 255)',
+                        tension: 0.2,
+                        pointRadius: 6, // Set the point radius to a larger value
+                    }]
+                    };
+
+                    // Configure the chart
+                    const config = {
+                    type: 'line',
+                    data: dataChart,
+                    options: {
+                        width: 1000,
+                        height: 700,
+                        responsive: false,
+                        plugins: {
+                            legend: {
+                                display: false // Hide the legend
+                            },
+                            title: {
+                                display: true,
+                                text: String(artistName),
+                                color: 'white',
+                                font: {
+                                    size: 24 // Increase the font size to 24 pixels
+                                }
+                            }
+                        },
+                        scales: {
+                        x: {
+                            display: true,
+                            title: {
+                            display: true,
+                            text: 'Date',
+                            color: 'white'
+                            },
+                            grid: {
+                                color: 'grey'
+                            }
+                        },
+                        y: {
+                            display: true,
+                            title: {
+                            display: true,
+                            text: 'Popularity Points',
+                            color: 'white'
+                            },
+                            grid: {
+                                color: 'grey'
+                            }
+                        },
+                        }
+                    },
+                    };
+
+                    // Render the chart
+                    const myChart = new Chart(
+                    document.getElementById('myChart'),
+                    config
+                    );
+
+                    document.getElementById('myChart').classList.remove('invisible');
+
+                })
+
+                } catch (error) {
+                    console.error(`Download error: ${error.message}`);
+                    getToken();
+                }
+
+
+ 
+
+            }
+
+            document.getElementById('greyOut').addEventListener("click", function() {
+
+                document.getElementById('greyOut').classList.add('invisible');
+
+                document.getElementById('graphContainer').innerHTML = ''
+
+            })
+
+
+
+        </script>
+
+    </body>
+
+</html>

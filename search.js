@@ -27,7 +27,7 @@ function search (query) {
 
     //document.getElementById('loading').classList.remove('invisible')
 
-    const newQuery = query.split(' ').join('_')
+    const newQuery = query.split(' ').join('+')
     console.log(newQuery)
     console.log(searchInProgress)
     if (query) {
